@@ -1,43 +1,22 @@
 const { Product } = require('../models/product');
 const { Category } = require('../models/category');
 const multer = require('multer');
-// const FILE_TYPE_MAP = {
-//     'image/png': 'png',
-//     'image/jpeg': 'jpeg',
-//     'image/jpg': 'jpg'
-// };
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        // const isValid = FILE_TYPE_MAP[file.mimetype];
-        // let uploadError = new Error('Invalid image type');
-
-        // if (isValid) {
-        //     uploadError = null;
-        // }
-        cb(uploadError, '/uploads'); // Ensure the path is correct and folder exists
+        
+        cb(uploadError, '/uploads/product'); 
     },
     filename: function (req, file, cb) {
-        const fileName = file.originalname.split(' ').join('-'); // Replace spaces in filename
+        const fileName = file.originalname.split(' ').join('-'); 
         // const extension = FILE_TYPE_MAP[file.mimetype];
         cb(null, `${fileName}-${Date.now()}.${extension}`);
     }
 });
 
-// Set multer options (limit to 10 files)
 const uploadOptions = multer({ storage: storage }).single('images')
 
-// Create a new product with image upload
 const createProduct = async (req, res) => {
-    // uploadOptions(req, res, async function (err) {
-        // if (err) {
-        //     return res.status(400).send({ message: 'Image upload failed', error: err.message });
-        // }
-        // const category = await Category.findById(req.body.category);
-        // if (!category) return res.status(400).send('Invalid Category');
-
-        // const files = req.files;
-        // if (!files || files.length === 0) return res.status(400).send('No image in the request');
-        // const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
         try {
             console.log("print --> 1");
             let product = new Product({
@@ -85,7 +64,7 @@ const getOneProduct = async (req, res) => {
         res.status(500).json({ message: 'Error retrieving product', error });
     }
 };
-
+ 
 module.exports = {
     createProduct,
     getProducts,

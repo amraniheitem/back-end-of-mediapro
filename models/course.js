@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 
 const course = new mongoose.Schema({
-    name_of_course : {type : String,require : true},
-    name_of_formator : {type : String,require : true},
-    imageOfCourse : {type : String,require : true},
+    name_of_course : {type : String ,require : true},
+    name_of_formator : {type : String ,require : true},
+    imageOfCourse : {type : String ,require : true},
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CategoryCourse',

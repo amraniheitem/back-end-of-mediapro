@@ -7,7 +7,7 @@ const multer = require('multer');
 const diskStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         console.log(file);
-        cb(null, 'uploads')
+        cb(null, 'uploads/product')
     },
     filename: function (req, file, cb) {
         const ext = file.mimetype.split('/')[1];

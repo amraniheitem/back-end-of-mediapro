@@ -11,14 +11,12 @@ const animateurSchema = new mongoose.Schema({
   adresse: { type: String, required: true },
   numero_carte: { type: Number, required: true },
   available: { type: Boolean, required: true },
-  photo_profil: {type : String, required: false, default: ''},
-  video_presentatif: {type: String,  required: false , default: '' },  
-  ranking :{type:Number , defaut :0}
-
+  photo_profil: { type: String, required: true, default: '' },
+  video_presentatif: { type: String, required: true, default: '' },
+  ranking: { type: Number, default: 0 },
+  event : {type:Number,default : 0} ,
+  nbrLike : {type : Number , default : 0} ,
+  type:{type : [String] , required : true}
 });
-
-
-
-
 
 module.exports = mongoose.model('Animateur', animateurSchema);

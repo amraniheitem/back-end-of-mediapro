@@ -14,7 +14,7 @@ const voixSchema = new mongoose.Schema({
   available: { type: Boolean, required: true },
   photo_profil: {
     type : String,
-    required: false,
+    required: true,
     default: ''
   },
   video_presentatif: {
@@ -22,7 +22,9 @@ const voixSchema = new mongoose.Schema({
     required: false,
     default: '' 
   },
-  ranking :{type:Number , defaut :0}
+  ranking :{type:Number , defaut :0},
+  video_fa : {type : Number , default :0},
+  nbrLike : {type : Number , default : 0}
 });
 
 

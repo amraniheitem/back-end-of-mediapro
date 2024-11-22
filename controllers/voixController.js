@@ -1,6 +1,22 @@
 const Voix = require("../models/voix");
 const mongoose = require('mongoose');
 
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        
+        cb(uploadError, '/uploads'); 
+    },
+    filename: function (req, file, cb) {
+        const fileName = file.originalname.split(' ').join('-'); 
+        cb(null, `${fileName}-${Date.now()}.${extension}`);
+    }
+});
+
+const uploadOptions = multer({ storage: storage }).single('images')
+
+
+
 const getAll = async (req, res) => {
     const voixList = await Voix.find().select({ nom: 1, prenom: 1, wilaya: 1, photo_profil: 1, video_presentatif: 1,ranking :1 });
 
