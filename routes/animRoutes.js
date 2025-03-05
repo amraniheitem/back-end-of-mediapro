@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const voixController = require('../controllers/voixController');
+const animController = require('../controllers/animController');
 const nearAnim = require('../controllers/animateurSort.js/nearAnim');
 const topAnim = require('../controllers/animateurSort.js/topAnim');
 const multer = require('multer');
@@ -28,12 +28,12 @@ fileFilter: (req,file,cb)=>{
     }
 }})
 
-router.get('/getAll', voixController.getAll);
+router.get('/getAll', animController.getAll);
 router.get('/getNear', nearAnim.getNearestAnimateurs);
-router.get('/getOne/:id', voixController.getOne);
-router.post('/add',upload.single('photo_profil'), voixController.add);
-router.post('/update/:id', voixController.update);
-router.post('/suprimmer/:id', voixController.deletes);
+router.get('/getOne/:id', animController.getOne);
+router.post('/add', animController.add);
+router.post('/update/:id', animController.update);
+router.post('/suprimmer/:id', animController.deletes);
 
 
 module.exports = router;

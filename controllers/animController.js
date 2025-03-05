@@ -41,32 +41,37 @@ const getOne = async (req, res) => {
 
 const add = async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).send({ message: 'Photo de profil obligatoire' });
-        }
+        console.log('Données reçues dans req.body:', req.body);
 
         const animateur = new Animateur({
             nom: req.body.nom,
             prenom: req.body.prenom,
             email: req.body.email,
-            numero: req.body.numero,
+            numero: parseInt(req.body.numero),
             sex: req.body.sex,
             niveau: req.body.niveau,
             wilaya: req.body.wilaya,
             adresse: req.body.adresse,
-            numero_carte: req.body.numero_carte,
-            available: req.body.available,
-            photo_profil: req.file.filename,
+            numero_carte: parseInt(req.body.numero_carte),
+            available: req.body.available === 'true' || req.body.available === true,
+            photo_profil: req.file ? req.file.filename : null,  // ✅ Vérification avant d’accéder à filename
             video_presentatif: req.body.video_presentatif || '',
             ranking: req.body.ranking || 0,
+            event: req.body.event || 0,
+            nbrLike: req.body.nbrLike || 0,
+            type: Array.isArray(req.body.type) ? req.body.type : [req.body.type]
         });
+
+        console.log('Données à sauvegarder dans MongoDB:', animateur);
 
         const savedAnimateur = await animateur.save();
 
+        console.log('Animateur sauvegardé avec succès :', savedAnimateur);
+
         res.status(201).send(savedAnimateur);
     } catch (error) {
-        console.error('Erreur lors de la création de l\'animateur :', error);
-        res.status(500).send({ message: 'Erreur serveur', error });
+        console.error("Erreur lors de l'ajout de l'animateur :", error);
+        res.status(500).send({ message: 'Erreur serveur', error: error.message });
     }
 };
 

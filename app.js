@@ -9,6 +9,7 @@ const conseilleRoutes = require('./routes/conseille');
 const cateCourseRoutes = require('./routes/CateCourseROutes');
 const animRoutes = require('./routes/animRoutes');
 const authRoutes = require('./routes/authRoutes');
+const commandeRoutes = require('./routes/commandeRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/conseille', conseilleRoutes);
 app.use('/animateur', animRoutes);
 app.use('/auth', authRoutes);
 app.use('/catecourse', cateCourseRoutes);
+app.use('/order', commandeRoutes);
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))

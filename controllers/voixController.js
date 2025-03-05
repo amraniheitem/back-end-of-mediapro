@@ -23,7 +23,7 @@ const getAll = async (req, res) => {
     if (!voixList) {
         res.status(500).json({ success: false });
     } 
-    res.send(VoixList);
+    res.send(voixList);
 };
 
 const getOne = async (req, res) => {

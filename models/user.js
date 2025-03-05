@@ -5,11 +5,12 @@ const userSchema = new mongoose.Schema({
   prénom: { type: String, required: true },
   date: { type: String, required: true },
   numéro: { type: String, required: true },
-  wilaya : {type : String , required : true},
-  email: { type: String, unique: true}, 
-  password: String,
-  confirmed_password: String,
-  isConfirmed: { type: Boolean, default: false },
+  wilaya: { type: String, required: true },
+  email: { type: String, unique: true, sparse: true }, // sparse évite les erreurs d'unicité si absent
+  password: { type: String },
+  isVerified: { type: Boolean, default: false },
+  verificationCode: String,
+  verificationCodeExpires: Date,
 });
 
 module.exports = mongoose.model('User', userSchema);
