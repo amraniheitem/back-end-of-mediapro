@@ -5,9 +5,9 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 require('dotenv').config();
 
-const secret = process.env.SECRET; // Correction : SECRET en majuscules pour suivre la convention .env
+const secret = process.env.SECRET;
 
-// 📩 Configuration de Nodemailer
+// Configuration de Nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -16,18 +16,19 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// 🔢 Fonction pour générer un code de vérification à 6 chiffres
+// Générer un code de vérification à 6 chiffres
 const generateVerificationCode = () => {
   return crypto.randomInt(100000, 999999).toString();
 };
 
-// 📩 Fonction pour envoyer un email de vérification
+// Envoyer un email de vérification
 const sendVerificationEmail = async (email, verificationCode) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Votre code de vérification",
     text: `Votre code de vérification est : ${verificationCode}`,
+    html: `<p>Votre code de vérification est : <strong>${verificationCode}</strong></p>`,
   };
 
   try {
@@ -35,11 +36,11 @@ const sendVerificationEmail = async (email, verificationCode) => {
     console.log("Email envoyé avec succès !");
   } catch (error) {
     console.error("Erreur lors de l'envoi de l'email :", error);
-    throw new Error("Échec de l'envoi de l'email");
+    throw new Error(`Échec de l'envoi de l'email : ${error.message}`);
   }
 };
 
-// 📌 Enregistrement des informations personnelles
+// Enregistrement des informations personnelles
 const info_register = async (req, res) => {
   try {
     const { nom, prénom, date, numéro, wilaya } = req.body;
@@ -53,7 +54,7 @@ const info_register = async (req, res) => {
   }
 };
 
-// 📌 Création du compte + Envoi du code de vérification
+// Création du compte + Envoi du code de vérification
 const account_register = async (req, res) => {
   try {
     const { email, password, confirmed_password } = req.body;
@@ -74,16 +75,17 @@ const account_register = async (req, res) => {
 
     await user.save();
 
-    // 🔥 Envoi du code de vérification par email
+    // Envoi du code de vérification par email
     await sendVerificationEmail(email, verificationCode);
 
     res.status(201).json({ message: "Compte créé, vérifiez votre email pour confirmer", userId: user._id });
   } catch (err) {
+    console.error("Erreur dans account_register :", err);
     res.status(500).json({ message: "Erreur lors de l'enregistrement", error: err.message });
   }
 };
 
-// 📌 Vérification du code
+// Vérification du code
 const verifyCode = async (req, res) => {
   try {
     const { code } = req.body;
@@ -117,23 +119,67 @@ const verifyCode = async (req, res) => {
   }
 };
 
-// 📌 Connexion de l'utilisateur
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // 1. Vérification de l'utilisateur
     const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Utilisateur non trouvé" 
+      });
+    }
 
-    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
-    if (!user.isVerified) return res.status(403).json({ message: "Veuillez vérifier votre email avant de vous connecter" });
+    // 2. Vérification de l'email
+    if (!user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Veuillez vérifier votre email avant de vous connecter"
+      });
+    }
 
+    // 3. Vérification du mot de passe
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) return res.status(401).json({ message: "Mot de passe invalide" });
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Combinaison email/mot de passe invalide"
+      });
+    }
 
-    const token = jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: '1h' });
+    // 4. Génération du JWT
+    const payload = {
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role || 'user' // Valeur par défaut si non spécifié
+    };
 
-    res.status(200).json({ message: "Connexion réussie", token });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+      algorithm: 'HS256'
+    });
+
+    // 5. Réponse finale
+    res.status(200).json({
+      success: true,
+      message: "Connexion réussie",
+      token: token,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      }
+    });
+
   } catch (err) {
-    res.status(500).json({ message: "Erreur lors de la connexion", error: err.message });
+    console.error('Erreur login:', err);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la connexion",
+      error: err.message
+    });
   }
 };
 

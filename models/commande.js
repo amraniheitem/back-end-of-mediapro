@@ -24,6 +24,8 @@ const orderSchema = new mongoose.Schema({
     quantity: { type: Number, default: 1 } 
   },
   phone: { type: String, required: true },
+  nom: { type: String, required: true },
+  prénom: { type: String, required: true },
   email: { type: String, required: true }, 
   adresse: { type: String, required: true }, 
   ville: { type: String, required: true }, 

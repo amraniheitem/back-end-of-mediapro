@@ -18,14 +18,31 @@ const uploadOptions = multer({ storage: storage }).single('images')
 
 
 const getAll = async (req, res) => {
-    const voixList = await Voix.find().select({ nom: 1, prenom: 1, wilaya: 1, photo_profil: 1, video_presentatif: 1,ranking :1 });
-
-    if (!voixList) {
-        res.status(500).json({ success: false });
-    } 
-    res.send(voixList);
+    try {
+        const voixList = await Voix.find({});
+        
+        if (!voixList || voixList.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Aucune voix off trouvée" 
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            count: voixList.length,
+            data: voixList
+        });
+        
+    } catch (err) {
+        console.error("Erreur lors de la récupération :", err);
+        res.status(500).json({
+            success: false,
+            error: "Erreur serveur",
+            details: err.message
+        });
+    }
 };
-
 const getOne = async (req, res) => {
     try {
         const voix = await Voix.findById(req.params.id);
@@ -39,10 +56,9 @@ const getOne = async (req, res) => {
         res.status(500).json({ success: false, message: "Erreur serveur", error: error.message });
     }
 };
-
 const add = async (req, res) => {
     try {
-        let voix = new voix({
+        let voix = new Voix({
             nom: req.body.nom,
             prenom: req.body.prenom,
             email: req.body.email,
@@ -51,22 +67,23 @@ const add = async (req, res) => {
             niveau: req.body.niveau,
             wilaya: req.body.wilaya,
             adresse: req.body.adresse,
+            description: req.body.description,
             numero_carte: req.body.numero_carte,
-            photo_profil: req.body.photo_profil,
-            video_presentatif: req.body.video_presentatif,
+            photo_profil: req.body.photo_profil || '',
+            video_presentatif: req.body.video_presentatif || '',
+            langue: req.body.langue || 'Français', // Valeur par défaut
+            available: req.body.available ?? true // Valeur par défaut
         });
 
         voix = await voix.save();
 
-        if (!voix) {
-            return res.status(500).send("voixoff n'est pas créé");
-        }
-
-        res.send(voix);
+        res.status(201).json(voix);
     } catch (err) {
-        res.status(500).send("Erreur serveur");
+        console.error(err);
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
     }
 };
+
 
 const update = async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -125,4 +142,57 @@ const deletes = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getOne, add, update, deletes };
+const ratingVoix = async (req, res) => {
+    try {
+      const voix = await Voix.findById(req.params.id);
+      if (!voix) {
+        return res.status(404).json({ 
+          success: false,
+          message: "Voix-off non trouvée" 
+        });
+      }
+  
+      const userId = req.user.userId;
+  
+      // Vérification avec optional chaining
+      const existingRating = voix.ratings?.find(r => 
+        r.userId.toString() === userId
+      );
+  
+      if (existingRating) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Vous avez déjà noté cette voix-off"
+        });
+      }
+  
+      // Initialiser ratings si nécessaire
+      if (!voix.ratings) voix.ratings = [];
+  
+      // Ajout de la note
+      voix.ratings.push({
+        userId: new mongoose.Types.ObjectId(userId),
+        value: req.body.rating
+      });
+  
+      // Calcul moyenne
+      const total = voix.ratings.reduce((sum, r) => sum + r.value, 0);
+      voix.averageRating = total / voix.ratings.length;
+  
+      await voix.save();
+  
+      res.status(201).json({
+        success: true,
+        averageRating: voix.averageRating.toFixed(1),
+        totalRatings: voix.ratings.length
+      });
+  
+    } catch (error) {
+      res.status(500).json({ 
+        success: false,
+        message: error.message 
+      });
+    }
+  };
+
+module.exports = { getAll, getOne, add, update, deletes,ratingVoix };

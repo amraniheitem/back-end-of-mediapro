@@ -1,5 +1,19 @@
 const mongoose = require('mongoose');
 
+const ratingSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId, // Doit être un ObjectId
+    ref: 'User',
+    required: true // Validation activée
+  },
+  value: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+  }
+});
+
 const voixSchema = new mongoose.Schema({
   nom: { type: String, required: true },
   prenom: { type: String, required: true },
@@ -14,7 +28,7 @@ const voixSchema = new mongoose.Schema({
   available: { type: Boolean, required: true },
   photo_profil: {
     type : String,
-    required: true,
+    required: false,
     default: ''
   },
   video_presentatif: {
@@ -22,8 +36,21 @@ const voixSchema = new mongoose.Schema({
     required: false,
     default: '' 
   },
-  ranking :{type:Number , defaut :0},
+  ranking: { 
+    type: Number, 
+    default: 0 
+  },
+
+  ratings: [ratingSchema],
+  averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5
+  },
+
   video_fa : {type : Number , default :0},
+  description : {type : String ,default : ""},
   nbrLike : {type : Number , default : 0}
 });
 

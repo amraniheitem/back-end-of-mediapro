@@ -6,7 +6,7 @@ const Course = require('../models/course');
 
 exports.createOrder = async (req, res) => {
     try {
-        const { userId, type, details, phone, email, adresse, ville } = req.body;
+        const { nom,prénom,userId, type, details, phone, email, adresse, ville } = req.body;
 
         let specificDetails = {};
         switch (type) {
@@ -45,6 +45,8 @@ exports.createOrder = async (req, res) => {
         }
 
         const newOrder = new Order({
+            nom,
+            prénom,
             userId,
             type,
             details: specificDetails,

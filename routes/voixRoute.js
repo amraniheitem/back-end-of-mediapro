@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const animController = require('../controllers/animController');
-const nearAnim = require('../controllers/animateurSort.js/nearAnim');
-const topAnim = require('../controllers/animateurSort.js/topAnim');
+const voixController = require('../controllers/voixController');
 const multer = require('multer');
 const authMiddleware = require('../middleware/authMiddleware')
+
 
 const diskStorage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -28,15 +27,15 @@ fileFilter: (req,file,cb)=>{
     }
 }})
 
-router.get('/getAll', animController.getAll);
-router.get('/getNear', nearAnim.getNearestAnimateurs);
-router.get('/getOne/:id', animController.getOne);
-router.post('/add', animController.add);
-router.post('/update/:id', animController.update);
-router.post('/suprimmer/:id', animController.deletes);
+router.get('/getAll', voixController.getAll);
+router.get('/getOne/:id', voixController.getOne);
+router.post('/add', voixController.add);
+router.post('/update/:id', voixController.update);
+router.post('/suprimmer/:id', voixController.update);
 router.post('/:id/rate', authMiddleware, (req, res) => {
     console.log('User ID:', req.user.userId); 
-    animController.ratingAnimateur(req, res);
+    voixController.ratingVoix(req, res);
 });
+
 
 module.exports = router;

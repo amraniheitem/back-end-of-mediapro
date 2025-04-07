@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   verificationCode: String,
   verificationCodeExpires: Date,
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }
+
 });
 
 module.exports = mongoose.model('User', userSchema);
