@@ -1,5 +1,5 @@
 const { Product } = require('../models/product');
-const { Category } = require('../models/category');
+const { Category } = require('../models/categoryProduit');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
