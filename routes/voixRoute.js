@@ -12,7 +12,7 @@ const diskStorage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         const ext = file.mimetype.split('/')[1];
-        const filename = `product-${Date.now()}.${ext}`
+        const filename = `voix-${Date.now()}.${ext}`
         cb(null,filename)
     }
 })

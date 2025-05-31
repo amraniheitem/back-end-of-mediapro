@@ -9,11 +9,11 @@ const authMiddleware = require('../middleware/authMiddleware')
 const diskStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         console.log(file);
-        cb(null, 'uploads/voix')
+        cb(null, 'uploads/animateur')
     },
     filename: function (req, file, cb) {
         const ext = file.mimetype.split('/')[1];
-        const filename = `product-${Date.now()}.${ext}`
+        const filename = `animateur-${Date.now()}.${ext}`
         cb(null,filename)
     }
 })

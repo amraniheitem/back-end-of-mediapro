@@ -7,13 +7,14 @@ const productRoutes = require('./routes/product');
 const courseRoutes = require('./routes/course');
 const conseilleRoutes = require('./routes/conseille');
 const cateCourseRoutes = require('./routes/CateCourseROutes');
+const cateProductRoutes = require('./routes/cateProduct');
 const animRoutes = require('./routes/animRoutes');
 const authRoutes = require('./routes/authRoutes');
 const authDesRoutes = require('./routes/auth-desktopRoutes');
 const commandeRoutes = require('./routes/commandeRoutes');
 const voixRoutes = require('./routes/voixRoute');
 require('dotenv').config();
-
+   
 const app = express();
 const PORT = process.env.PORT || 3000; 
 
@@ -22,7 +23,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
-
 app.use('/category', categoryRoutes);
 app.use('/product', productRoutes);
 app.use('/course', courseRoutes);
@@ -31,6 +31,7 @@ app.use('/animateur', animRoutes);
 app.use('/authdesktop', authDesRoutes);
 app.use('/auth', authRoutes);
 app.use('/catecourse', cateCourseRoutes);
+app.use('/cateproduct', cateProductRoutes);
 app.use('/order', commandeRoutes);
 app.use('/voix', voixRoutes);
 

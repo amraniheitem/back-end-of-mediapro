@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 
 const course = new mongoose.Schema({
     name_of_course : {type : String ,require : true},
-    name_of_formator : {type : String ,require : true},
-    imageOfCourse : {type : String ,require : true},
+    name_of_formator : {type : String ,require : false},
+    imageOfCourse : {type : String ,require : false},
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CategoryCourse',
@@ -15,4 +15,6 @@ const course = new mongoose.Schema({
     isDisplay : {type : Boolean , default : false}
 },{timestamps: true});
 
-module.exports= mongoose.model('course', course);
+
+const Course = mongoose.model('Course', course); 
+module.exports = Course; // Export unique
