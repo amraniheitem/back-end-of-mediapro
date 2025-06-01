@@ -169,7 +169,11 @@ const login = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        nom : user.nom,
+        prénom : user.prénom,
+        wilaya : user.wilaya,
+        numéro : user.numéro
       }
     });
 

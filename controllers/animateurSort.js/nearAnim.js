@@ -1,4 +1,4 @@
-const Animateur = require("../../models/animateur");
+const Animateur = require("../../models/animateurVip");
 const User = require("../../models/user");
 const wilayaCoordinates = {
     "Adrar": { lat: 27.87529, lon: -0.29388 },
