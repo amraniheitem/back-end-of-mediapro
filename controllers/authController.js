@@ -40,17 +40,30 @@ const sendVerificationEmail = async (email, verificationCode) => {
   }
 };
 
-// Enregistrement des informations personnelles
 const info_register = async (req, res) => {
   try {
     const { nom, prénom, date, numéro, wilaya } = req.body;
 
-    const newUser = new User({ nom, prénom, date, numéro, wilaya });
+    // Créez l'utilisateur SANS le champ email
+    const newUser = new User({ 
+      nom, 
+      prénom, 
+      date, 
+      numéro, 
+      wilaya 
+    });
+
     await newUser.save();
 
-    res.status(201).json({ message: "Informations personnelles enregistrées", userId: newUser._id });
+    res.status(201).json({ 
+      message: "Informations enregistrées", 
+      userId: newUser._id 
+    });
   } catch (err) {
-    res.status(500).json({ message: "Erreur lors de l'enregistrement", error: err.message });
+    res.status(500).json({ 
+      message: "Erreur lors de l'enregistrement", 
+      error: err.message 
+    });
   }
 };
 
@@ -187,4 +200,47 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { info_register, account_register, verifyCode, login };
+const updateUser = async (req, res) => {
+  try {
+    const { userId } = req.params; // Récupération de l'ID depuis l'URL
+    const { nom, prénom, wilaya } = req.body;
+
+    // Mise à jour uniquement des champs autorisés
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { nom, prénom, wilaya },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Utilisateur non trouvé"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Informations mises à jour avec succès",
+      user: {
+        id: updatedUser._id,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        nom: updatedUser.nom,
+        prénom: updatedUser.prénom,
+        wilaya: updatedUser.wilaya,
+        numéro: updatedUser.numéro
+      }
+    });
+  } catch (err) {
+    console.error('Erreur mise à jour:', err);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la mise à jour",
+      error: err.message
+    });
+  }
+};
+
+
+module.exports = { info_register, account_register, verifyCode, login ,updateUser};

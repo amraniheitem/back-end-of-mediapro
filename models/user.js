@@ -6,7 +6,13 @@ const userSchema = new mongoose.Schema({
   date: { type: String, required: true },
   numéro: { type: String, required: true },
   wilaya: { type: String, required: true },
-  email: { type: String, unique: true, sparse: true }, // sparse évite les erreurs d'unicité si absent
+  email: { 
+    type: String, 
+    index: {
+      unique: true,
+      sparse: true 
+    }
+  },
   password: { type: String },
   isVerified: { type: Boolean, default: false },
   verificationCode: String,
