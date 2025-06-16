@@ -12,7 +12,7 @@ const ratingSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 1,
-    max: 5
+    max: 5,
   }
 });
 
@@ -27,7 +27,7 @@ const animateurSchema = new mongoose.Schema({
   adresse: { type: String, required: true },
   numero_carte: { type: Number, required: true },
   description: { type: String, default :"" },
-  available: { type: Boolean, required: true },
+  available: { type: Boolean, required: true,default:'true' },
   photo_profil: { type: String, required: false, default: '' },
   video_presentatif: { type: String, required: false, default: '' },
   ratings: [ratingSchema],

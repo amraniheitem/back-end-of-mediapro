@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const uploadOptions = multer({ storage: storage }).single('images')
+const uploadOptions = multer({ storage: storage }).single('photo_profil')
 
 
 const getAll = async (req, res) => {
@@ -53,8 +53,6 @@ const getOne = async (req, res) => {
 
 const add = async (req, res) => {
     try {
-        console.log('Données reçues dans req.body:', req.body);
-
         const animateur = new Animateur({
             nom: req.body.nom,
             prenom: req.body.prenom,
@@ -67,7 +65,7 @@ const add = async (req, res) => {
             adresse: req.body.adresse,
             numero_carte: parseInt(req.body.numero_carte),
             available: req.body.available === 'true' || req.body.available === true,
-            photo_profil: req.file ? req.file.filename : null,  // ✅ Vérification avant d’accéder à filename
+            photo_profil: req.file ? req.file.filename : null,
             video_presentatif: req.body.video_presentatif || '',
             ranking: req.body.ranking || 0,
             event: req.body.event || 0,
@@ -75,18 +73,13 @@ const add = async (req, res) => {
             type: Array.isArray(req.body.type) ? req.body.type : [req.body.type]
         });
 
-        console.log('Données à sauvegarder dans MongoDB:', animateur);
-
         const savedAnimateur = await animateur.save();
-
-        console.log('Animateur sauvegardé avec succès :', savedAnimateur);
-
         res.status(201).send(savedAnimateur);
     } catch (error) {
-        console.error("Erreur lors de l'ajout de l'animateur :", error);
         res.status(500).send({ message: 'Erreur serveur', error: error.message });
     }
 };
+
 
 const update = async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {

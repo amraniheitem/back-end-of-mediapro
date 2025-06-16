@@ -1,60 +1,76 @@
 const Animateur = require("../models/animateurVip");
 const mongoose = require('mongoose');
-
 const multer = require('multer');
-const storage = multer.diskStorage({
+const path = require('path');
+
+// Configuration de stockage avec multer
+const diskStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        
-        cb(uploadError, '/uploads'); 
+        cb(null, 'uploads/animateurVip'); // 📁 Dossier correct
     },
     filename: function (req, file, cb) {
-        const fileName = file.originalname.split(' ').join('-'); 
-        cb(null, `${fileName}-${Date.now()}.${extension}`);
+        const ext = file.mimetype.split('/')[1];
+        const filename = `animateur-${Date.now()}.${ext}`;
+        cb(null, filename);
     }
 });
 
-const uploadOptions = multer({ storage: storage }).single('images')
-
-
-const getAll = async (req, res) => {
-    const animateurList = await Animateur.find().select({           nom: 1,
-        prenom: 1,
-        wilaya: 1,
-        photo_profil: 1,
-        nbrLike: 1,
-        ratings: 1,
-        event: 1,
-        averageRating: 1, 
-        email: 1,
-        numero: 1,
-        sex: 1,
-        adresse: 1
+// Vérification du type de fichier
+const upload = multer({
+    storage: diskStorage,
+    fileFilter: (req, file, cb) => {
+        const filetype = file.mimetype.split('/')[0];
+        if (filetype === "image") {
+            return cb(null, true);
+        } else {
+            return cb(new Error("Le fichier doit être une image"), false);
+        }
+    }
 });
 
-    if (!animateurList) {
-        res.status(500).json({ success: false });
-    } 
-    res.send(animateurList);
+const uploadOptions = upload.single('photo_profil');
+
+// ✅ GET ALL
+const getAll = async (req, res) => {
+    try {
+        const animateurList = await Animateur.find().select({
+            nom: 1,
+            prenom: 1,
+            wilaya: 1,
+            photo_profil: 1,
+            nbrLike: 1,
+            ratings: 1,
+            event: 1,
+            averageRating: 1,
+            email: 1,
+            numero: 1,
+            sex: 1,
+            adresse: 1
+        });
+
+        res.send(animateurList);
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 };
 
+// ✅ GET ONE
 const getOne = async (req, res) => {
     try {
         const animateur = await Animateur.findById(req.params.id);
-
         if (!animateur) {
             return res.status(404).json({ success: false, message: "Animateur non trouvé" });
         }
-
         res.send(animateur);
     } catch (error) {
-        res.status(500).json({ success: false, message: "Erreur serveur", error: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
+// ✅ ADD
 const add = async (req, res) => {
     try {
-        console.log('Données reçues dans req.body:', req.body);
-
+        console.log('🟡 Requête reçue:', req.body);
         const animateur = new Animateur({
             nom: req.body.nom,
             prenom: req.body.prenom,
@@ -67,7 +83,7 @@ const add = async (req, res) => {
             adresse: req.body.adresse,
             numero_carte: parseInt(req.body.numero_carte),
             available: req.body.available === 'true' || req.body.available === true,
-            photo_profil: req.file ? req.file.filename : null,  // ✅ Vérification avant d’accéder à filename
+            photo_profil: req.file ? req.file.filename : null,
             video_presentatif: req.body.video_presentatif || '',
             ranking: req.body.ranking || 0,
             event: req.body.event || 0,
@@ -75,31 +91,22 @@ const add = async (req, res) => {
             type: Array.isArray(req.body.type) ? req.body.type : [req.body.type]
         });
 
-        console.log('Données à sauvegarder dans MongoDB:', animateur);
-
-        const savedAnimateur = await animateur.save();
-
-        console.log('Animateur sauvegardé avec succès :', savedAnimateur);
-
-        res.status(201).send(savedAnimateur);
+        const saved = await animateur.save();
+        res.status(201).send(saved);
     } catch (error) {
-        console.error("Erreur lors de l'ajout de l'animateur :", error);
-        res.status(500).send({ message: 'Erreur serveur', error: error.message });
+        console.error("Erreur lors de l'ajout :", error);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
     }
 };
 
+// ✅ UPDATE
 const update = async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
-        return res.status(400).send("ID de l'animateur invalide");
+        return res.status(400).send("ID invalide");
     }
 
     try {
-        const animateur = await Animateur.findById(req.params.id);
-        if (!animateur) {
-            return res.status(400).send("Animateur non trouvé");
-        }
-
-        const nouveau_animateur = await Animateur.findByIdAndUpdate(
+        const animateur = await Animateur.findByIdAndUpdate(
             req.params.id,
             {
                 nom: req.body.nom,
@@ -117,82 +124,72 @@ const update = async (req, res) => {
             { new: true }
         );
 
-        if (!nouveau_animateur) {
-            return res.status(500).send("L'animateur n'a pas pu être mis à jour");
+        if (!animateur) {
+            return res.status(500).send("Échec de la mise à jour");
         }
 
-        res.send(nouveau_animateur);
+        res.send(animateur);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
+// ✅ DELETE
 const deletes = async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
-        return res.status(400).send("ID de l'animateur invalide");
+        return res.status(400).send("ID invalide");
     }
 
     try {
         const animateur = await Animateur.findByIdAndDelete(req.params.id);
-
         if (animateur) {
-            return res.status(200).json({ success: true, message: "L'animateur est supprimé!" });
+            return res.status(200).json({ success: true, message: "Animateur supprimé" });
         } else {
-            return res.status(404).json({ success: false, message: "Animateur non trouvé!" });
+            return res.status(404).json({ success: false, message: "Animateur introuvable" });
         }
     } catch (err) {
         return res.status(500).json({ success: false, error: err });
     }
 };
+
+// ✅ RATING
 const ratingAnimateur = async (req, res) => {
     try {
-      const animateur = await Animateur.findById(req.params.id);
-      const userId = req.user.userId; // Récupéré du middleware
-  
-      // Vérifier si l'utilisateur a déjà noté
-      const existingRating = animateur.ratings.find(r => 
-        r.userId.toString() === userId
-      );
-  
-      if (existingRating) {
-        return res.status(400).json({ 
-          success: false,
-          message: "Vous avez déjà noté cet animateur"
-        });
-      }
-  
-      // Ajouter la nouvelle note AVEC userId
-      animateur.ratings.push({
-        userId: new mongoose.Types.ObjectId(userId), // Conversion explicite
-        value: req.body.rating
-      });
-  
-      // Calculer la moyenne
-      const total = animateur.ratings.reduce((sum, r) => sum + r.value, 0);
-      animateur.averageRating = total / animateur.ratings.length;
-  
-      await animateur.save();
-  
-      res.status(201).json({
-        success: true,
-        averageRating: animateur.averageRating.toFixed(1),
-        totalRatings: animateur.ratings.length
-      });
-  
-    } catch (error) {
-      res.status(500).json({ 
-        success: false,
-        message: error.message 
-      });
-    }
-  };
+        const animateur = await Animateur.findById(req.params.id);
+        const userId = req.user.userId;
 
-module.exports = { 
-    getAll, 
-    getOne, 
-    add, 
-    update, 
-    deletes, 
+        const existingRating = animateur.ratings.find(r => r.userId.toString() === userId);
+        if (existingRating) {
+            return res.status(400).json({ success: false, message: "Déjà noté" });
+        }
+
+        animateur.ratings.push({
+            userId: new mongoose.Types.ObjectId(userId),
+            value: req.body.rating
+        });
+
+        const total = animateur.ratings.reduce((sum, r) => sum + r.value, 0);
+        animateur.averageRating = total / animateur.ratings.length;
+
+        await animateur.save();
+
+        res.status(201).json({
+            success: true,
+            averageRating: animateur.averageRating.toFixed(1),
+            totalRatings: animateur.ratings.length
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = {
+    getAll,
+    getOne,
+    add,
+    update,
+    deletes,
     ratingAnimateur,
-    uploadOptions 
+    uploadOptions
 };

@@ -3,39 +3,46 @@ const router = express.Router();
 const animController = require('../controllers/animController');
 const nearAnim = require('../controllers/animateurSort.js/nearAnim');
 const topAnim = require('../controllers/animateurSort.js/topAnim');
+const authMiddleware = require('../middleware/authMiddleware');
 const multer = require('multer');
-const authMiddleware = require('../middleware/authMiddleware')
+const path = require('path');
 
+// Configuration de stockage
 const diskStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        console.log(file);
-        cb(null, 'uploads/animateur')
+        cb(null, 'uploads/animateur');
     },
     filename: function (req, file, cb) {
-        const ext = file.mimetype.split('/')[1];
-        const filename = `animateur-${Date.now()}.${ext}`
-        cb(null,filename)
+        const ext = path.extname(file.originalname);
+        const filename = `animateur-${Date.now()}${ext}`;
+        cb(null, filename);
     }
-})
-const upload = multer({ storage: diskStorage ,
-fileFilter: (req,file,cb)=>{
-    const filetype = file.mimetype.split('/')[0];
-    if(filetype === "image"){
-        return cb(null,true);
+});
+
+// Middleware de filtre de type de fichier
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files are allowed!'), false);
     }
-    else{
-        return cb(AppError.create("file must be image",400,httpStatusText.FAIL),false);
-    }
-}})
+};
+
+// Initialisation de multer
+const upload = multer({
+    storage: diskStorage,
+    fileFilter: fileFilter
+});
+
+// 📍 Assure-toi d'utiliser le même nom de champ ici :
+router.post('/add', upload.single('photo_profil'), animController.add);
 
 router.get('/getAll', animController.getAll);
 router.get('/getNear', nearAnim.getNearestAnimateurs);
 router.get('/getOne/:id', animController.getOne);
-router.post('/add', animController.add);
 router.post('/update/:id', animController.update);
 router.post('/suprimmer/:id', animController.deletes);
 router.post('/:id/rate', authMiddleware, (req, res) => {
-    console.log('User ID:', req.user.userId); 
     animController.ratingAnimateur(req, res);
 });
 
