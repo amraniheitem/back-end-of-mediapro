@@ -15,7 +15,16 @@ const getAll = async (req, res) => {
             email: 1,
             numero: 1,
             sex: 1,
-            adresse: 1
+            adresse: 1,
+            available: 1,
+            langue :1 ,
+            video_presentatif:1,
+            video_fa:1,
+            description:1,
+            nbrLike:1,
+            ratings:1,
+            averageRating:1,
+            ranking:1
         });
 
         if (!voixList) {
