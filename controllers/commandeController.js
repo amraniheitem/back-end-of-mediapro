@@ -3,6 +3,7 @@ const Animateur = require('../models/animateur');
 const Voix = require('../models/voix');
 const Product = require('../models/product');
 const Course = require('../models/course');
+const AnimateurVip = require('../models/animateurVip');
 
 exports.createOrder = async (req, res) => {
     try {
@@ -11,6 +12,16 @@ exports.createOrder = async (req, res) => {
         let specificDetails = {};
         switch (type) {
             case 'ANIMATEUR':
+                specificDetails = {
+                    animateurId: details.animateurId,
+                    date: details.date,
+                    eventType: details.eventType,
+                    eventDate: details.eventDate,
+                    eventHeure: details.eventHeure,
+                    eventLieu: details.eventLieu
+                };
+                break;
+                case 'ANIMATEURVIP':
                 specificDetails = {
                     animateurId: details.animateurId,
                     date: details.date,
