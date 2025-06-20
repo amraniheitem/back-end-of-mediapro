@@ -4,11 +4,12 @@ const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // L'utilisateur qui passe la commande
   type: { 
     type: String, 
-    enum: ['ANIMATEUR', 'VOICEOVER', 'COURS', 'PRODUIT'], 
+    enum: ['ANIMATEUR','ANIMATEURVIP', 'VOICEOVER', 'COURS', 'PRODUIT'], 
     required: true 
   },
   details: {
     animateurId: { type: mongoose.Schema.Types.ObjectId, ref: 'Animateur' },
+    animateurVIPId: { type: mongoose.Schema.Types.ObjectId, ref: 'AnimateurVip' },
     voiceoverId: { type: mongoose.Schema.Types.ObjectId, ref: 'Voix' },
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, 
     produitId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }, 

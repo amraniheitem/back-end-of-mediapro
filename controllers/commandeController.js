@@ -23,7 +23,7 @@ exports.createOrder = async (req, res) => {
                 break;
                 case 'ANIMATEURVIP':
                 specificDetails = {
-                    animateurId: details.animateurId,
+                    animateurId: details.animateurVIPId,
                     date: details.date,
                     eventType: details.eventType,
                     eventDate: details.eventDate,
