@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const animController = require('../controllers/animController');
-const nearAnim = require('../controllers/animateurSort.js/nearAnim');
-const topAnim = require('../controllers/animateurSort.js/topAnim');
 const authMiddleware = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
@@ -38,7 +36,6 @@ const upload = multer({
 router.post('/add', upload.single('photo_profil'), animController.add);
 
 router.get('/getAll', animController.getAll);
-router.get('/getNear', nearAnim.getNearestAnimateurs);
 router.get('/getOne/:id', animController.getOne);
 router.post('/update/:id', animController.update);
 router.post('/suprimmer/:id', animController.deletes);

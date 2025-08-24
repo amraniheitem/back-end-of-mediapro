@@ -1,4 +1,4 @@
-const Conseille = require('../models/conseille')
+const Conseille = require('../models/services/conseille')
 
 
 const createConseille = async (req,res)=>{
