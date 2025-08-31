@@ -1,19 +1,25 @@
-import mongoose from "mongoose";
+// models/Client.js
+const mongoose = require("mongoose");
 
-const clientSchema = new mongoose.Schema(
-{
-nom: { type: String, required: true, trim: true },
-prenom: { type: String, trim: true },
-email: { type: String, trim: true, lowercase: true, unique: true, sparse: true },
-telephone: { type: String, trim: true },
-adresse: { type: String, trim: true },
-entreprise: { type: String, trim: true },
-},
-{ timestamps: true }
-);
+const ClientSchema = new mongoose.Schema({
+  nom: { type: String, required: true },
+  prenom: { type: String },
+  email: { type: String, required: true, unique: true },
+  telephone: { type: String },
+  adresse: { type: String },
 
+  typeClient: { 
+    type: String, 
+    enum: ["Boutique", "Agence", "Entreprise", "Particulier"], 
+    required: true 
+  },
 
-clientSchema.index({ email: 1 }, { unique: true, sparse: true });
+  entreprise: { type: String }, // si client entreprise
+  poste: { type: String },      // si besoin (manager, directeur...)
 
+  conventions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Convention" }],
 
-export const Client = mongoose.model("Client", clientSchema);
+  dateInscription: { type: Date, default: Date.now }
+});
+
+module.exports = mongoose.model("Client", ClientSchema);

@@ -1,84 +1,113 @@
-const Promo = require('../models/services/promo')
+const Promo = require('../models/services/promo');
 
+// CREATE
+const createPromo = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Aucune image téléchargée'
+      });
+    }
 
-const createPromo = async (req,res)=>{
-    try{
-        const {Promo} = req.body;
-        const newPromo = new Promo({
-            Promo
-        });
-        const length = (await Promo.find()).length
-        newPromo.id = length;
-        await newPromo.save()
-        res.status(201).json({ success: true, message: 'Promo added successfully', Promo: newPromo });
-}catch (error) {
-    
-    res.status(500).json("error",error)
-    
-}}
+    // Récupérer les champs envoyés
+    const { titre, description, reduction, dateDebut, dateFin, actif } = req.body;
 
+    const newPromo = new Promo({
+      titre,
+      description,
+      reduction,
+      dateDebut,
+      dateFin,
+      actif,
+      image: req.file.filename
+    });
 
+    await newPromo.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Promo ajoutée avec succès',
+      data: newPromo
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'ajout",
+      error: error.message
+    });
+  }
+};
+
+// DELETE
 const deletePromo = async (req, res) => {
-    try {
-        const PromoId = req.params.id;
+  try {
+    const promoId = req.params.id;
 
-        const Promo = await Promo.findById(PromoId);
-        if (!Promo) {
-            return res.status(404).json({ success: false, message: 'Promo not found' });
-        }
-        await Promo.findByIdAndDelete(PromoId);
-
-        res.status(200).json({ success: true, message: 'Promo deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' });
+    const promo = await Promo.findById(promoId);
+    if (!promo) {
+      return res.status(404).json({ success: false, message: 'Promo non trouvée' });
     }
+
+    await Promo.findByIdAndDelete(promoId);
+
+    res.status(200).json({ success: true, message: 'Promo supprimée avec succès' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur interne du serveur' });
+  }
 };
 
+// GET ALL
 const getAllPromo = async (req, res) => {
-    try {
-        const Promo = await Promo.find(); 
-        res.status(200).json(Promo); 
-    } catch (error) {
-        res.status(500).json({ message: error.message }); 
-    }
+  try {
+    const promos = await Promo.find(); 
+    res.status(200).json(promos); 
+  } catch (error) {
+    res.status(500).json({ message: error.message }); 
+  }
 };
 
+// GET ONE
 const getOnePromo = async (req, res) => {
-    try {
-        const PromoId = req.params.id; 
-        const Promo = await Promo.findById(PromoId); 
-        if (!Promo) {
-            return res.status(404).json({ message: 'Promo not found' });
-        }
-
-        res.status(200).json(Promo); 
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+  try {
+    const promoId = req.params.id; 
+    const promo = await Promo.findById(promoId); 
+    if (!promo) {
+      return res.status(404).json({ message: 'Promo non trouvée' });
     }
+
+    res.status(200).json(promo); 
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
+// UPDATE
 const updatePromo = async (req, res) => {
-    try {
-        const PromoId = req.params.id;
-        const updates = req.body;
+  try {
+    const promoId = req.params.id;
+    const updates = req.body;
 
-        const Promo = await Promo.findByIdAndUpdate(PromoId, updates, { new: true });
-
-        if (!Promo) {
-            return res.status(404).json({ success: false, message: 'Promo not found' });
-        }
-        res.status(200).json({ success: true, message: 'Promo updated successfully', Promo });
-        
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' });
+    if (req.file) {
+      updates.image = req.file.filename; // mise à jour de l'image si fournie
     }
-};
 
+    const promo = await Promo.findByIdAndUpdate(promoId, updates, { new: true });
+
+    if (!promo) {
+      return res.status(404).json({ success: false, message: 'Promo non trouvée' });
+    }
+    res.status(200).json({ success: true, message: 'Promo mise à jour avec succès', data: promo });
+        
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur interne du serveur' });
+  }
+};
 
 module.exports = {
-    createPromo,
-    deletePromo,
-    getAllPromo,
-    getOnePromo,
-    updatePromo
+  createPromo,
+  deletePromo,
+  getAllPromo,
+  getOnePromo,
+  updatePromo
 };

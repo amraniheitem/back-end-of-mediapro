@@ -1,21 +1,38 @@
-const Conseille = require('../models/services/conseille')
+const Conseille = require('../models/services/conseille');
 
+const createConseille = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Aucune image téléchargée"
+      });
+    }
 
-const createConseille = async (req,res)=>{
-    try{
-        const {Conseille} = req.body;
-        const newConseille = new Conseille({
-            Conseille
-        });
-        const length = (await Conseille.find()).length
-        newConseille.id = length;
-        await newConseille.save()
-        res.status(201).json({ success: true, message: 'Conseille added successfully', Conseille: newConseille });
-}catch (error) {
-    
-    res.status(500).json("error",error)
-    
-}}
+    const { conseille, video } = req.body;
+
+    const newConseille = new Conseille({
+      conseille,
+      video,
+      image: req.file.filename
+    });
+
+    await newConseille.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Conseille ajouté avec succès",
+      data: newConseille
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'ajout",
+      error: error.message
+    });
+  }
+};
+
 
 
 const deleteConseille = async (req, res) => {

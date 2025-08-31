@@ -1,84 +1,93 @@
-const Client = require('../models/client')
+const Client = require('../models/client');
 
+// ➕ Créer un client
+const createClient = async (req, res) => {
+  try {
+    const newClient = new Client(req.body);
+    await newClient.save();
 
-const createClient = async (req,res)=>{
-    try{
-        const {Client} = req.body;
-        const newClient = new Client({
-            Client
-        });
-        const length = (await Client.find()).length
-        newClient.id = length;
-        await newClient.save()
-        res.status(201).json({ success: true, message: 'Client added successfully', Client: newClient });
-}catch (error) {
-    
-    res.status(500).json("error",error)
-    
-}}
+    res.status(201).json({
+      success: true,
+      message: 'Client added successfully',
+      data: newClient
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating client',
+      error: error.message
+    });
+  }
+};
 
-
+// ❌ Supprimer un client
 const deleteClient = async (req, res) => {
-    try {
-        const ClientId = req.params.id;
+  try {
+    const clientId = req.params.id;
 
-        const Client = await Client.findById(ClientId);
-        if (!Client) {
-            return res.status(404).json({ success: false, message: 'Client not found' });
-        }
-        await Client.findByIdAndDelete(ClientId);
-
-        res.status(200).json({ success: true, message: 'Client deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' });
+    const client = await Client.findByIdAndDelete(clientId);
+    if (!client) {
+      return res.status(404).json({ success: false, message: 'Client not found' });
     }
+
+    res.status(200).json({ success: true, message: 'Client deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+  }
 };
 
+// 📜 Récupérer tous les clients
 const getAllClient = async (req, res) => {
-    try {
-        const Client = await Client.find(); 
-        res.status(200).json(Client); 
-    } catch (error) {
-        res.status(500).json({ message: error.message }); 
-    }
+  try {
+    const clients = await Client.find();
+    res.status(200).json(clients);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
+// 🔍 Récupérer un seul client
 const getOneClient = async (req, res) => {
-    try {
-        const ClientId = req.params.id; 
-        const Client = await Client.findById(ClientId); 
-        if (!Client) {
-            return res.status(404).json({ message: 'Client not found' });
-        }
+  try {
+    const clientId = req.params.id;
+    const client = await Client.findById(clientId);
 
-        res.status(200).json(Client); 
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (!client) {
+      return res.status(404).json({ success: false, message: 'Client not found' });
     }
+
+    res.status(200).json(client);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
+// ✏️ Mettre à jour un client
 const updateClient = async (req, res) => {
-    try {
-        const ClientId = req.params.id;
-        const updates = req.body;
+  try {
+    const clientId = req.params.id;
+    const updates = req.body;
 
-        const Client = await Client.findByIdAndUpdate(ClientId, updates, { new: true });
+    const updatedClient = await Client.findByIdAndUpdate(clientId, updates, { new: true });
 
-        if (!Client) {
-            return res.status(404).json({ success: false, message: 'Client not found' });
-        }
-        res.status(200).json({ success: true, message: 'Client updated successfully', Client });
-        
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' });
+    if (!updatedClient) {
+      return res.status(404).json({ success: false, message: 'Client not found' });
     }
-};
 
+    res.status(200).json({
+      success: true,
+      message: 'Client updated successfully',
+      data: updatedClient
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+  }
+};
 
 module.exports = {
-    createClient,
-    deleteClient,
-    getAllClient,
-    getOneClient,
-    updateClient
+  createClient,
+  deleteClient,
+  getAllClient,
+  getOneClient,
+  updateClient
 };
