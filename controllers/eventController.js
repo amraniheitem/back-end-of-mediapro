@@ -3,22 +3,61 @@ const Event = require('../models/services/event');
 // Créer un event
 const createEvent = async (req, res) => {
   try {
-    const newEvent = new Event(req.body);
-    await newEvent.save();
+    const {
+      titre,
+      description,
+      lieu,
+      dateDebut,
+      dateFin,
+      heure,
+      typeEvenement,
+      prix,
+      responsable,
+      typeAnimateur,
+      animateurNormal,
+      animateurVip,
+    } = req.body;
+
+    // Logique: un seul type d'animateur
+    let animateurNormalId = null;
+    let animateurVipId = null;
+
+    if (typeAnimateur === "normal") {
+      animateurNormalId = animateurNormal;
+    } else if (typeAnimateur === "vip") {
+      animateurVipId = animateurVip;
+    }
+
+    const event = new Event({
+      titre,
+      description,
+      lieu,
+      dateDebut,
+      dateFin,
+      heure,
+      typeEvenement,
+      prix,
+      responsable,
+      typeAnimateur,
+      animateurNormal: animateurNormalId,
+      animateurVip: animateurVipId,
+    });
+
+    await event.save();
 
     res.status(201).json({
       success: true,
-      message: 'Event added successfully',
-      event: newEvent
+      message: "Event created successfully",
+      event,
     });
-
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: error.message || "Internal server error"
+      message: error.message,
     });
   }
 };
+
 
 // Supprimer un event
 const deleteEvent = async (req, res) => {
