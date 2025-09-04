@@ -8,19 +8,14 @@ const eventSchema = new mongoose.Schema(
     titre: { type: String, required: true, trim: true },
     description: { type: String, trim: true },
     lieu: { type: String, required: true, trim: true },
-
     dateDebut: { type: Date, required: true },
     dateFin: { type: Date },
-
     heure: { type: String, trim: true, match: timeRegex }, // ex: "14:30"
-
     typeEvenement: { type: String, required: true, trim: true },
-
     prix: { type: Number, default: 0, min: 0 },
 
     responsable: { type: String, trim: true },
 
-    // === Choix exclusif de l'animateur ===
     animateurNormal: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Animateur",
@@ -31,15 +26,13 @@ const eventSchema = new mongoose.Schema(
       ref: "AnimateurVip",
       default: null,
     },
-
-    // utile pour l'UI/filtrage rapide
     typeAnimateur: {
       type: String,
       enum: ["normal", "vip"],
       default: null,
     },
 
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "Client" }],
+    participants:  { type: Number, default:0 , trim: true },
   },
   { timestamps: true }
 );
