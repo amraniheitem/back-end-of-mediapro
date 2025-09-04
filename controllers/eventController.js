@@ -2,20 +2,23 @@ const Event = require('../models/services/event')
 
 
 const createEvent = async (req,res)=>{
-    try{
-        const {Event} = req.body;
-        const newEvent = new Event({
-            Event
-        });
-        const length = (await Event.find()).length
-        newEvent.id = length;
-        await newEvent.save()
-        res.status(201).json({ success: true, message: 'Event added successfully', Event: newEvent });
-}catch (error) {
-    
-    res.status(500).json("error",error)
-    
-}}
+  try {
+    const newEvent = new Event(req.body);
+    await newEvent.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Event added successfully',
+      event: newEvent
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error"
+    });
+  }
+};
 
 
 const deleteEvent = async (req, res) => {
