@@ -1,8 +1,10 @@
 const Team = require('../models/services/team');
 
+
 // CREATE
 const createTeam = async (req, res) => {
   try {
+    // --- Vérif photo ---
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -10,19 +12,74 @@ const createTeam = async (req, res) => {
       });
     }
 
-    const { nom, prenom, email, telephone, poste, cvUrl, portfolioUrl, motivation, status } = req.body;
-
-    const newTeam = new Team({
+    // --- Récupération des données ---
+    const {
+      type, // normal | executif
       nom,
       prenom,
-      email,
+      dateNaissance,
+      adresse,
       telephone,
-      poste,
+      email,
+
+      numeroCIN,
+      numeroSS,
+      matricule,
+
+      poste,       // requis si type = executif
+      fonction,    // requis si type = normal
+      departement,
+      dateEmbauche,
+      salaire,
+
       cvUrl,
       portfolioUrl,
+      carteIdentiteUrl,
       motivation,
-      status,
-      photoprofil: req.file.filename
+      status
+    } = req.body;
+
+    // --- Vérifs logiques en fonction du type ---
+    if (type === "executif" && !poste) {
+      return res.status(400).json({
+        success: false,
+        message: "Le champ 'poste' est requis pour un exécutif"
+      });
+    }
+    if (type === "normal" && !fonction) {
+      return res.status(400).json({
+        success: false,
+        message: "Le champ 'fonction' est requis pour un membre normal"
+      });
+    }
+
+    // --- Création du document ---
+    const newTeam = new Team({
+      type,
+      nom,
+      prenom,
+      dateNaissance,
+      adresse,
+      telephone,
+      email,
+
+      numeroCIN,
+      numeroSS,
+      matricule,
+
+      poste,
+      fonction,
+      departement,
+      dateEmbauche,
+      salaire,
+
+      photoprofil: req.file.filename,
+      cvUrl,
+      portfolioUrl,
+      carteIdentiteUrl,
+
+      motivation,
+      status
     });
 
     await newTeam.save();
@@ -40,6 +97,7 @@ const createTeam = async (req, res) => {
     });
   }
 };
+
 
 // DELETE
 const deleteTeam = async (req, res) => {
