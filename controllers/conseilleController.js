@@ -37,13 +37,14 @@ const createConseille = async (req, res) => {
 
 const deleteConseille = async (req, res) => {
     try {
-        const ConseilleId = req.params.id;
+        const conseilleId = req.params.id;
 
-        const Conseille = await Conseille.findById(ConseilleId);
-        if (!Conseille) {
+        const conseille = await Conseille.findById(conseilleId);
+        if (!conseille) {
             return res.status(404).json({ success: false, message: 'Conseille not found' });
         }
-        await Conseille.findByIdAndDelete(ConseilleId);
+
+        await Conseille.findByIdAndDelete(conseilleId);
 
         res.status(200).json({ success: true, message: 'Conseille deleted successfully' });
     } catch (error) {
@@ -51,10 +52,11 @@ const deleteConseille = async (req, res) => {
     }
 };
 
+
 const getAllConseille = async (req, res) => {
     try {
-        const Conseille = await Conseille.find(); 
-        res.status(200).json(Conseille); 
+        const conseils = await Conseille.find(); // ← on garde le modèle 'Conseille' importé
+        res.status(200).json(conseils); 
     } catch (error) {
         res.status(500).json({ message: error.message }); 
     }
