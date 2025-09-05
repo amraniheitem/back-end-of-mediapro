@@ -64,13 +64,13 @@ const getAllConseille = async (req, res) => {
 
 const getOneConseille = async (req, res) => {
     try {
-        const ConseilleId = req.params.id; 
-        const Conseille = await Conseille.findById(ConseilleId); 
-        if (!Conseille) {
+        const conseilleId = req.params.id; 
+        const conseille = await Conseille.findById(conseilleId); 
+        if (!conseille) {
             return res.status(404).json({ message: 'Conseille not found' });
         }
 
-        res.status(200).json(Conseille); 
+        res.status(200).json(conseille); 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
