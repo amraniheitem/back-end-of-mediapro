@@ -17,6 +17,7 @@ const authDesRoutes = require('./routes/auth-desktopRoutes');
 const commandeRoutes = require('./routes/commandeRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const voixRoutes = require('./routes/voixRoute');
+const boutiqueRoutes = require('./routes/boutiqueRoutes');
 const conventionRoutes = require('./routes/conventionRoutes');
 require('dotenv').config();
 
@@ -42,6 +43,7 @@ app.use('/catecourse', cateCourseRoutes);
 app.use('/cateproduct', cateProductRoutes);
 app.use('/order', commandeRoutes);
 app.use('/voix', voixRoutes);
+app.use('/boutique', boutiqueRoutes);
 app.use('/client', clientRoutes);
 app.use('/convention', conventionRoutes);
 
