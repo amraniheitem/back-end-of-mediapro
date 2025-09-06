@@ -17,29 +17,32 @@ const storage = multer.diskStorage({
 const uploadOptions = multer({ storage: storage }).single('images')
 
 const createProduct = async (req, res) => {
-        try {
-            console.log("print --> 1");
-            let product = new Product({
-                name: req.body.name,
-                description: req.body.description,
-                price: req.body.price,
-                category: req.body.category,
-                countInStock: req.body.countInStock,
-                rating: req.body.rating,
-                numReviews: req.body.numReviews,
-                isFeatured: req.body.isFeatured,
-                images: req.file.filename
-            });
-    
-            product = await product.save();
-    
-            if (!product) return res.status(500).send('The product cannot be created');
-    
-            res.send(product);
-        } catch (error) {
-            console.log("error",error)
-        }
-    // });
+  try {
+    let product = new Product({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      boutique: req.body.boutique,   // obligatoire
+      countInStock: req.body.countInStock,
+      rating: req.body.rating || 0,
+      numReviews: req.body.numReviews || 0,
+      isFeatured: req.body.isFeatured || false,
+      images: req.file ? req.file.filename : ''
+    });
+
+    product = await product.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Produit ajouté avec succès",
+      product
+    });
+
+  } catch (error) {
+    console.error("Erreur création produit :", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
 
 // Obtenir tous les produits
