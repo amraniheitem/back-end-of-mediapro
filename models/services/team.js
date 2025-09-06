@@ -44,11 +44,8 @@ const teamSchema = new mongoose.Schema(
     salaire: { type: Number },
 
     photoprofil: { type: String, trim: true },
-    cvUrl: { type: String, trim: true },
     portfolioUrl: { type: String, trim: true },
-    carteIdentiteUrl: { type: String, trim: true },
 
-    motivation: { type: String, trim: true },
     status: {
       type: String,
       enum: ["en_attente", "acceptée", "refusée", "active", "inactive"],

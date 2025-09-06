@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const productSchema = mongoose.Schema({
+const productSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -16,6 +16,11 @@ const productSchema = mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'categoryProduit'
+    },
+    boutique: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Boutique',   // 🔗 Référence à une boutique
+        required: true
     },
     countInStock: {
         type: Number,
@@ -40,4 +45,5 @@ const productSchema = mongoose.Schema({
 });
 
 const Product = mongoose.model('Product', productSchema);
+
 module.exports = { Product };

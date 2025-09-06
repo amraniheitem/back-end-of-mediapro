@@ -21,21 +21,13 @@ const createTeam = async (req, res) => {
       adresse,
       telephone,
       email,
-
       numeroCIN,
-      numeroSS,
-      matricule,
-
       poste,       // requis si type = executif
       fonction,    // requis si type = normal
       departement,
       dateEmbauche,
       salaire,
-
-      cvUrl,
       portfolioUrl,
-      carteIdentiteUrl,
-      motivation,
       status
     } = req.body;
 
