@@ -124,8 +124,8 @@ exports.updateOrderStatus = async (req, res) => {
     try {
         const { status } = req.body;
 
-        // Liste des statuts autorisés
-        const validStatuses = ["EN_ATTENTE", "CONFIRMEE", "ANNULEE"];
+        // Statuts conformes au schéma Mongoose
+        const validStatuses = ["PENDING", "CONFIRMED", "CANCELLED"];
 
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ message: "Statut invalide" });
@@ -146,3 +146,4 @@ exports.updateOrderStatus = async (req, res) => {
         res.status(500).json({ message: "Erreur serveur", error });
     }
 };
+
