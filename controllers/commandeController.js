@@ -118,3 +118,31 @@ exports.deleteOrder = async (req, res) => {
         res.status(500).json({ message: 'Erreur serveur', error });
     }
 };
+
+// controllers/orderController.js
+exports.updateOrderStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+
+        // Liste des statuts autorisés
+        const validStatuses = ["EN_ATTENTE", "CONFIRMEE", "ANNULEE"];
+
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: "Statut invalide" });
+        }
+
+        const order = await Order.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(404).json({ message: "Commande non trouvée" });
+        }
+
+        res.status(200).json(order);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error });
+    }
+};
