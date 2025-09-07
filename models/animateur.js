@@ -27,6 +27,7 @@ const animateurSchema = new mongoose.Schema({
   adresse: { type: String, required: true },
   numero_carte: { type: Number, required: true },
   description: { type: String, default :"" },
+  prix_heure: { type: Number, default :"" },
   available: { type: Boolean, required: true,default:'true' },
   photo_profil: { type: String, required: false, default: '' },
   video_presentatif: { type: String, required: false, default: '' },

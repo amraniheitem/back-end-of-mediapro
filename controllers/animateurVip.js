@@ -45,6 +45,8 @@ const getAll = async (req, res) => {
             email: 1,
             numero: 1,
             sex: 1,
+                    prix_heure:1,
+
             adresse: 1
         });
 
@@ -81,6 +83,8 @@ const add = async (req, res) => {
             niveau: req.body.niveau,
             wilaya: req.body.wilaya,
             adresse: req.body.adresse,
+                        prix_heure: req.body.prix_heure,
+
             numero_carte: parseInt(req.body.numero_carte),
             available: req.body.available === 'true' || req.body.available === true,
             photo_profil: req.file ? req.file.filename : null,
@@ -116,6 +120,9 @@ const update = async (req, res) => {
                 sex: req.body.sex,
                 niveau: req.body.niveau,
                 wilaya: req.body.wilaya,
+                prix_heure: req.body.prix_heure,
+event:req.body.event,
+nbrLike : req.body.nbrLike,
                 adresse: req.body.adresse,
                 numero_carte: req.body.numero_carte,
                 photo_profil: req.body.photo_profil,

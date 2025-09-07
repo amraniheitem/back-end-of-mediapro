@@ -25,6 +25,7 @@ const voixSchema = new mongoose.Schema({
   adresse: { type: String, required: true },
   numero_carte: { type: Number, required: true },
   langue :{type :String , required :true},
+  prix_minute: { type: Number, default :"" },
   available: { type: Boolean, required: true },
   photo_profil: {
     type : String,
