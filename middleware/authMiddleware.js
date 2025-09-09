@@ -1,50 +1,20 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+// middleware/authMiddleware.js
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-const authMiddleware = (req, res, next) => {
-    // Récupération du header Authorization
-    const authHeader = req.headers.authorization;
-    
-    // Vérification du format Bearer
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({
-            success: false,
-            message: "Format d'authentification invalide"
-        });
-    }
+module.exports = (req, res, next) => {
+  const header = req.headers.authorization;
+  if (!header) return res.status(401).json({ message: "Token manquant" });
 
-    // Extraction du token
-    const token = authHeader.split(' ')[1];
+  const token = header.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Token manquant" });
 
-    try {
-        // Vérification et décodage avec HS256
-        const decoded = jwt.verify(token, process.env.JWT_SECRET, {
-            algorithms: ['HS256']
-        });
-
-        // Stockage des informations utilisateur
-        req.user = {
-            userId: decoded.userId, // ID récupéré du payload JWT
-            role: decoded.role
-        };
-
-        next();
-    } catch (error) {
-        // Gestion des erreurs spécifiques
-        let message = "Erreur d'authentification";
-        
-        if (error.name === 'TokenExpiredError') {
-            message = "Token expiré";
-        } else if (error.name === 'JsonWebTokenError') {
-            message = "Token invalide";
-        }
-
-        res.status(401).json({
-            success: false,
-            message: message,
-            error: error.message
-        });
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // decoded doit contenir { id, email, role } selon ton generateToken
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Token invalide" });
+  }
 };
-
-module.exports = authMiddleware;
