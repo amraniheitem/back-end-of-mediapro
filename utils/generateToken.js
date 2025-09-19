@@ -8,5 +8,5 @@ exports.generateAccessToken = (user) => {
     email: user.email,
     role: user.role || "user",
   };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
