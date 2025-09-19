@@ -13,7 +13,6 @@ exports.getAllUsers = async (req, res) => {
 };
 
 
-// 🔸 Modifier le rôle d’un utilisateur
 exports.updateUserRole = async (req, res) => {
   try {
     const { role } = req.body;
