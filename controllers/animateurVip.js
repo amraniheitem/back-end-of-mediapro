@@ -3,32 +3,14 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 
-// Configuration de stockage avec multer
-const diskStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/animateurVip'); // 📁 Dossier correct
-    },
-    filename: function (req, file, cb) {
-        const ext = file.mimetype.split('/')[1];
-        const filename = `animateur-${Date.now()}.${ext}`;
-        cb(null, filename);
-    }
-});
 
 // Vérification du type de fichier
-const upload = multer({
-    storage: diskStorage,
-    fileFilter: (req, file, cb) => {
-        const filetype = file.mimetype.split('/')[0];
-        if (filetype === "image") {
-            return cb(null, true);
-        } else {
-            return cb(new Error("Le fichier doit être une image"), false);
-        }
-    }
-});
 
-const uploadOptions = upload.single('photo_profil');
+const { getCloudinaryStorage} = require("../utils/cloudinary");
+
+// ✅ Cloudinary storage
+const upload = multer({ storage: getCloudinaryStorage("animateurVip") });
+const uploadOptions = upload.single("photo_profil");
 
 // ✅ GET ALL
 const getAll = async (req, res) => {
@@ -45,7 +27,7 @@ const getAll = async (req, res) => {
             email: 1,
             numero: 1,
             sex: 1,
-                    prix_heure:1,
+            prix_heure:1,
 
             adresse: 1
         });
@@ -71,37 +53,35 @@ const getOne = async (req, res) => {
 
 // ✅ ADD
 const add = async (req, res) => {
-    try {
-        console.log('🟡 Requête reçue:', req.body);
-        const animateur = new Animateur({
-            nom: req.body.nom,
-            prenom: req.body.prenom,
-            email: req.body.email,
-            numero: parseInt(req.body.numero),
-            sex: req.body.sex,
-            description: req.body.description,
-            niveau: req.body.niveau,
-            wilaya: req.body.wilaya,
-            adresse: req.body.adresse,
-                        prix_heure: req.body.prix_heure,
+  try {
+    const animateur = new Animateur({
+      nom: req.body.nom,
+      prenom: req.body.prenom,
+      email: req.body.email,
+      numero: parseInt(req.body.numero),
+      sex: req.body.sex,
+      description: req.body.description,
+      niveau: req.body.niveau,
+      wilaya: req.body.wilaya,
+      adresse: req.body.adresse,
+      prix_heure: req.body.prix_heure,
+      numero_carte: parseInt(req.body.numero_carte),
+      available: req.body.available === "true" || req.body.available === true,
+      photo_profil: req.file ? req.file.path : null, 
+      video_presentatif: req.body.video_presentatif || "",
+      ranking: req.body.ranking || 0,
+      event: req.body.event || 0,
+      nbrLike: req.body.nbrLike || 0,
+      type: Array.isArray(req.body.type) ? req.body.type : [req.body.type],
+    });
 
-            numero_carte: parseInt(req.body.numero_carte),
-            available: req.body.available === 'true' || req.body.available === true,
-            photo_profil: req.file ? req.file.filename : null,
-            video_presentatif: req.body.video_presentatif || '',
-            ranking: req.body.ranking || 0,
-            event: req.body.event || 0,
-            nbrLike: req.body.nbrLike || 0,
-            type: Array.isArray(req.body.type) ? req.body.type : [req.body.type]
-        });
-
-        const saved = await animateur.save();
-        res.status(201).send(saved);
-    } catch (error) {
-        console.error("Erreur lors de l'ajout :", error);
-        res.status(500).json({ message: 'Erreur serveur', error: error.message });
-    }
+    const saved = await animateur.save();
+    res.status(201).send(saved);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
 };
+
 
 // ✅ UPDATE
 const update = async (req, res) => {

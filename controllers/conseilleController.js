@@ -14,7 +14,7 @@ const createConseille = async (req, res) => {
     const newConseille = new Conseille({
       conseille,
       video,
-      image: req.file.filename
+      image: req.file ? req.file.path : null
     });
 
     await newConseille.save();

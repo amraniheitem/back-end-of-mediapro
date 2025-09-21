@@ -1,33 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/productController');
+const productController = require('../controllers/productController');
 const multer = require('multer');
+const { getCloudinaryStorage } = require('../utils/cloudinary');
 
+// ⚡ Multer avec Cloudinary (dossier MediaPro/product)
+const upload = multer({
+  storage: getCloudinaryStorage('product'),
+  limits: { fileSize: 5 * 1024 * 1024 } // max 5 Mo
+}).single('image'); // ✅ doit correspondre au champ du frontend
 
-const diskStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        console.log(file);
-        cb(null, 'uploads/product')
-    },
-    filename: function (req, file, cb) {
-        const ext = file.mimetype.split('/')[1];
-        const filename = `product-${Date.now()}.${ext}`
-        cb(null,filename)
+// 🎯 Middleware pour gérer les erreurs d’upload
+const handleUpload = (req, res, next) => {
+  upload(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: 'Erreur lors du téléchargement de l’image',
+        error: err.message
+      });
     }
-})
-const upload = multer({ storage: diskStorage ,
-fileFilter: (req,file,cb)=>{
-    const filetype = file.mimetype.split('/')[0];
-    if(filetype === "image"){
-        return cb(null,true);
-    }
-    else{
-        return cb(AppError.create("file must be image",400,httpStatusText.FAIL),false);
-    }
-}})
+    next();
+  });
+};
 
-router.get('/search/:id',authController.getOneProduct);
-router.get('/list', authController.getProducts);
-router.post('/add',upload.single('images'), authController.createProduct); 
+// ----------------- ROUTES -----------------
+
+// 🔍 Chercher un produit par ID
+router.get('/search/:id', productController.getOneProduct);
+
+// 📋 Liste de produits
+router.get('/list', productController.getProducts);
+
+// ➕ Ajouter un produit avec image (Cloudinary)
+router.post('/add', handleUpload, productController.createProduct);
+
+// ✏️ Mettre à jour un produit (si nouvelle image, Cloudinary remplace)
+router.patch('/update/:id', handleUpload, productController.updateProduct);
+
+// 🗑️ Supprimer un produit
+router.delete('/delete/:id', productController.deleteProduct);
 
 module.exports = router;

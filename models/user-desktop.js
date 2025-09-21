@@ -31,4 +31,4 @@ const UserSchema = new mongoose.Schema({
   devices: [DeviceSchema],
 }, { timestamps: true });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("UserDesktop", UserSchema, "user-desktops");
