@@ -28,6 +28,7 @@ const createTeam = async (req, res) => {
       dateEmbauche,
       salaire,
       portfolioUrl,
+      photoprofil,
       status
     } = req.body;
 
@@ -54,23 +55,14 @@ const createTeam = async (req, res) => {
       adresse,
       telephone,
       email,
-
       numeroCIN,
-      numeroSS,
-      matricule,
-
       poste,
       fonction,
       departement,
       dateEmbauche,
       salaire,
-
       photoprofil: req.file.filename,
-      cvUrl,
       portfolioUrl,
-      carteIdentiteUrl,
-
-      motivation,
       status
     });
 
