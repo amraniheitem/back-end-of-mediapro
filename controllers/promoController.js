@@ -11,7 +11,7 @@ const createPromo = async (req, res) => {
     }
 
     // Récupérer les champs envoyés
-    const { titre, description, reduction, dateDebut, dateFin, actif } = req.body;
+    const { titre, description, reduction, dateDebut, dateFin, actif, image } = req.body;
 
     const newPromo = new Promo({
       titre,
