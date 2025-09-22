@@ -8,7 +8,7 @@ const multer = require('multer');
 // 📸 Multer avec Cloudinary (stockage dans "team")
 const upload = multer({
   storage: getCloudinaryStorage('voix'),
-}).single('photoprofil');
+}).single('photo_profil');
 
 // 🔄 Middleware pour gérer les erreurs d’upload
 const handleUpload = (req, res, next) => {
