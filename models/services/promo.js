@@ -5,7 +5,8 @@ const promoSchema = new mongoose.Schema(
 {
 titre: { type: String, required: true, trim: true },
 description: { type: String, trim: true },
-reduction: { type: Number, min: 0, max: 100, required: true }, // pourcentage
+reduction: { type: Number, min: 0, max: 100 },
+prix: { type: Number, default:0  },
 dateDebut: { type: Date, required: true },
 dateFin: { type: Date, required: true },
 actif: { type: Boolean, default: true },
