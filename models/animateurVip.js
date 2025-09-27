@@ -25,8 +25,7 @@ const animateurVipSchema = new mongoose.Schema({
   wilaya: { type: String, required: true },
   adresse: { type: String, required: true },
   numero_carte: { type: Number, required: true },
-    prix_heure: { type: Number, default :"" },
-
+  prix_heure: { type: Number, default :0 },
   description: { type: String, default :"" },
   available: { type: Boolean, required: true },
   photo_profil: { type: String, required: false, default: '' },
