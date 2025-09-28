@@ -19,7 +19,7 @@ const createProduct = async (req, res) => {
       rating: req.body.rating || 0,
       numReviews: req.body.numReviews || 0,
       isFeatured: req.body.isFeatured || false,
-      image: req.file ? req.file.path : null, // ✅ Cloudinary donne `req.file.path`
+      images: req.file ? req.file.path : null, 
     });
 
     const savedProduct = await product.save();

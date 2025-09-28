@@ -8,7 +8,7 @@ const { getCloudinaryStorage } = require('../utils/cloudinary');
 const upload = multer({
   storage: getCloudinaryStorage('product'),
   limits: { fileSize: 5 * 1024 * 1024 } // max 5 Mo
-}).single('image'); // ✅ doit correspondre au champ du frontend
+}).single('images'); // ✅ doit correspondre au champ du frontend
 
 // 🎯 Middleware pour gérer les erreurs d’upload
 const handleUpload = (req, res, next) => {
